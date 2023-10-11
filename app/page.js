@@ -44,14 +44,14 @@ export default function Home() {
     console.log("Contract got");
     return contract;
   };
-  async function mintNft(to) {
+  async function mintNft() {
     let web3 = new Web3(window.ethereum);
     if (typeof window.ethereum !== "undefined") {
       let res;
       try {
         const contract = getContract();
         res = await contract.methods.safeMint().send({
-          from: to,
+          from: account,
           value: 0,
           // gas: 800,
           // gasPrice: web3.utils.toWei("50", "gwei"),
@@ -67,7 +67,7 @@ export default function Home() {
   return (
     <div className={`flex w-full h-[100vh] items-center justify-center`}>
       <button
-        onClick={() => mintNft(account)}
+        onClick={() => mintNft()}
         className={`w-[130px] h-[40px] outline-none text-white bg-black rounded-[8px] hover:opacity-75 active:opacity-50`}
       >
         Contract
