@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Web3 from "web3";
+import { Web3 } from "web3";
 import abi from "@/actions/ABI.json";
 
 export default function Home() {
@@ -39,7 +39,7 @@ export default function Home() {
     let web3 = new Web3(window.ethereum);
     const contract = new web3.eth.Contract(
       abi,
-      "0x2F9393e814a0f19876D65650EF4A5d894f11AE56"
+      "0x6c4Dcba306cD38B83F9362E907282B58AdD3a403"
     );
     console.log("Contract got");
     return contract;
@@ -50,7 +50,7 @@ export default function Home() {
       let res;
       try {
         const contract = getContract();
-        res = await contract.methods.safeMint(to).send({
+        res = await contract.methods.safeMint().send({
           from: to,
           value: 0,
           // gas: 800,
