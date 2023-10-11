@@ -5,7 +5,7 @@ import Web3 from "web3";
 import abi from "@/actions/ABI.json";
 
 export default function Home() {
-  const [account, setAccount] = useState();
+  const [account, setAccount] = useState("");
   useEffect(() => {
     async function connectToMetaMask() {
       try {
@@ -39,26 +39,27 @@ export default function Home() {
     let web3 = new Web3(window.ethereum);
     const contract = new web3.eth.Contract(
       abi,
-      "0xAF7FF053dF6a38F004DCfB964fAE4Bef6f479E6a"
+      "0x2F9393e814a0f19876D65650EF4A5d894f11AE56"
     );
     console.log("Contract got");
     return contract;
   };
-  async function mintNft(owner) {
+  async function mintNft(to) {
     let web3 = new Web3(window.ethereum);
     if (typeof window.ethereum !== "undefined") {
       let res;
       try {
         const contract = getContract();
-        res = await contract.methods.safeMint(owner).send({
-          from: owner,
-          gas: 800,
-          gasPrice: web3.utils.toWei("1", "gwei"),
+        res = await contract.methods.safeMint(to).send({
+          from: to,
+          value: 0,
+          // gas: 800,
+          // gasPrice: web3.utils.toWei("50", "gwei"),
         });
       } catch (err) {
         console.error("Mint Operation failed", err);
       }
-      alert(res);
+
       return res;
     }
   }
