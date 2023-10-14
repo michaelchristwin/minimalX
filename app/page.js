@@ -1,21 +1,19 @@
 "use client";
+const { ethers } = require("ethers");
 
 import { useEffect, useState } from "react";
-import { Web3 } from "web3";
 import abi from "@/actions/ABI.json";
 
 export default function Home() {
-  const [account, setAccount] = useState("");
+  const [contract, setContract] = useState("");
   useEffect(() => {
     async function connectToMetaMask() {
       try {
         if (typeof window.ethereum !== "undefined") {
-          const accounts = await window.ethereum.request({
-            method: "eth_requestAccounts",
-          });
-
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          await provider.send("eth_requestAccounts", []);
           console.log("Connected to MetaMask:");
-          return accounts;
+          return provider;
         } else {
           console.error("MetaMask is not available");
           return null;
@@ -26,44 +24,35 @@ export default function Home() {
       }
     }
 
-    connectToMetaMask().then((accounts) => {
-      if (accounts) {
-        const account = accounts[0];
-        setAccount(account);
+    connectToMetaMask().then((provider) => {
+      if (provider) {
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(
+          "0x6c4Dcba306cD38B83F9362E907282B58AdD3a403",
+          abi,
+          provider
+        );
+        const contractWithSigner = contract.connect(signer);
+
+        setContract(contractWithSigner);
       } else {
         // Handle the case where MetaMask is not connected or an error occurred
       }
     });
   }, []);
-  const getContract = () => {
-    let web3 = new Web3(window.ethereum);
-    const contract = new web3.eth.Contract(
-      abi,
-      "0x6c4Dcba306cD38B83F9362E907282B58AdD3a403"
-    );
-    console.log("Contract got");
-    return contract;
-  };
+
   async function mintNft() {
-    let web3 = new Web3(window.ethereum);
     if (typeof window.ethereum !== "undefined") {
-      let res;
+      let tx;
       try {
-        const contract = getContract();
-        res = await contract.methods.safeMint().send({
-          from: account,
-          value: 0,
-          // gas: 800,
-          // gasPrice: web3.utils.toWei("50", "gwei"),
-        });
+        tx = contract.safeMint();
       } catch (err) {
         console.error("Mint Operation failed", err);
       }
 
-      return res;
+      return tx;
     }
   }
-  console.log(account);
   return (
     <div className={`flex w-full h-[100vh] items-center justify-center`}>
       <button
